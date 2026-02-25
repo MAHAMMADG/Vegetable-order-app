@@ -1,0 +1,80 @@
+#config  
+namespace: mahi-ns
+
+config:
+  MONGODB_URI: "mongodb://mongodb-service:27017/vegetable_order_app"
+  DATABASE: "vegetable_order_app"
+
+#mongodb-service  
+
+namespace: mahi-ns
+
+mongodb:
+  serviceName: mongodb-service
+  appLabel: mongodb
+  port: 27017
+
+
+#mongodb-statefulset
+
+namespace: mahi-ns
+
+mongodb:
+  replicas: 1
+  serviceName: "mongodb-service"
+  appLabel: "mongodb"
+  image: "mongo:latest"
+  port: 27017
+  storageClassName: "retail-sc"
+  storage: "1Gi"
+
+configMap:
+  name: "vegetable-app-config"
+
+#pvc
+
+namespace: mahi-ns
+
+pvc:
+  name: retail-mongodb-pvc
+  accessMode: ReadWriteOnce
+  storage: 2Gi
+  storageClassName: retail-sc
+
+#vegetable-deployment
+
+namespace: mahi-ns
+
+vegetable:
+  replicas: 3
+  appLabel: vegetableapp
+  image: mahammad7/vegetable-app:v1.0.0
+  containerPort: 3000
+
+configMap:
+  name: vegetable-app-config
+
+#vegetable-service
+
+namespace: mahi-ns
+
+vegetable:
+  appLabel: vegetableapp
+
+service:
+  type: LoadBalancer
+  port: 3000
+  targetPort: 3000
+
+
+ # storage.yaml
+namespace: mahi-ns
+
+storageClass:
+  name: retail-sc
+  provisioner: ebs.csi.aws.com
+  type: gp3
+  reclaimPolicy: Retain
+  volumeBindingMode: WaitForFirstConsumer
+
+

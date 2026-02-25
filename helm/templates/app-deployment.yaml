@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-vegetable
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.vegetable.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.vegetable.appLabel }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.vegetable.appLabel }}
+    spec:
+      containers:
+        - name: vegetable-container
+          image: {{ .Values.vegetable.image }}
+          ports:
+            - containerPort: {{ .Values.vegetable.containerPort }}
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.configMap.name }}
+                  key: MONGODB_
